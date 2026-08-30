@@ -1,0 +1,64 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-railway_reservation}
+      POSTGRES_USER: ${POSTGRES_USER:-railway}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-railway}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-railway} -d ${POSTGRES_DB:-railway_reservation}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  django:
+    build:
+      context: ./django_backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://railway:railway@postgres:5432/railway_reservation
+      DJANGO_DATABASE_URL: postgres://railway:railway@postgres:5432/railway_reservation
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py seed_demo && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./django_backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  fastapi:
+    build:
+      context: ./fastapi_backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://railway:railway@postgres:5432/railway_reservation
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+    volumes:
+      - ./fastapi_backend:/app
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    env_file: .env
+    command: npm run dev -- --host 0.0.0.0
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - django
+      - fastapi
+
+volumes:
+  postgres_data:
