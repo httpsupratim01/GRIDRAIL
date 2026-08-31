@@ -14,7 +14,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        qs = Payment.objects.select_related("booking", "booking__user")
+        qs = Payment.objects.select_related("booking", "booking__user", "booking__train")
         if self.request.user.role == "ADMIN":
             return qs
         return qs.filter(booking__user=self.request.user)

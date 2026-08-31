@@ -49,6 +49,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      target: build
     env_file: .env
     command: npm run dev -- --host 0.0.0.0
     volumes:

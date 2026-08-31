@@ -7,9 +7,23 @@ from sqlalchemy.orm import Session
 from app.models.railway import Booking, Coach, Fare, Route, Seat, SeatReservation, Station, Train
 
 
+def normalize_class_type(class_type: str | None):
+    if not class_type:
+        return None
+    aliases = {
+        "1AC": "1A",
+        "2AC": "2A",
+        "3AC": "3A",
+        "CC": "Chair Car",
+        "SL": "Sleeper",
+    }
+    return aliases.get(class_type.strip().upper(), class_type)
+
+
 def search_trains(db: Session, source: str, destination: str, journey_date: date, class_type: str | None, passengers: int):
     source = source.upper()
     destination = destination.upper()
+    class_type = normalize_class_type(class_type)
     trains = (
         db.query(Train)
         .join(Station, Train.source_station_id == Station.id)

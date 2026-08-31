@@ -23,7 +23,7 @@ class Command(BaseCommand):
         passenger_email = os.getenv("PASSENGER_EMAIL", "supratim@gridrail.test")
         passenger_password = os.getenv("PASSENGER_PASSWORD", "Supratim@123")
 
-        User.objects.update_or_create(
+        admin, admin_created = User.objects.update_or_create(
             email=admin_email,
             defaults={
                 "username": admin_username,
@@ -31,25 +31,28 @@ class Command(BaseCommand):
                 "is_staff": True,
                 "is_superuser": True,
                 "phone": "9000000001",
-                "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=320&q=80",
             },
         )
-        admin = User.objects.get(email=admin_email)
-        admin.set_password(admin_password)
+        if not admin.avatar_url:
+            admin.avatar_url = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=320&q=80"
+        if admin_created:
+            admin.set_password(admin_password)
         admin.save()
 
-        passenger, _ = User.objects.update_or_create(
+        passenger, passenger_created = User.objects.update_or_create(
             email=passenger_email,
             defaults={
                 "username": passenger_username,
                 "role": "PASSENGER",
                 "phone": "9876543210",
                 "address": "Kolkata, West Bengal",
-                "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=80",
                 "frequent_journeys": ["NDLS-MMCT", "SBC-NDLS", "HWH-GHY"],
             },
         )
-        passenger.set_password(passenger_password)
+        if not passenger.avatar_url:
+            passenger.avatar_url = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=80"
+        if passenger_created:
+            passenger.set_password(passenger_password)
         passenger.save()
 
         station_rows = [
@@ -77,6 +80,7 @@ class Command(BaseCommand):
             ("Indore Junction", "INDB", "Indore", "Madhya Pradesh", "Western"),
             ("Varanasi Junction", "BSB", "Varanasi", "Uttar Pradesh", "Northern"),
             ("Ranchi Junction", "RNC", "Ranchi", "Jharkhand", "South Eastern"),
+            ("Tatanagar Junction", "TATA", "Jamshedpur", "Jharkhand", "South Eastern"),
         ]
         stations = {}
         for name, code, city, state, zone in station_rows:
@@ -97,6 +101,16 @@ class Command(BaseCommand):
             ("12985", "Jaipur Double Decker", "Double Decker", "JP", "NDLS", 303),
             ("12124", "Deccan Queen", "Intercity", "PUNE", "MMCT", 192),
             ("12309", "Rajendra Nagar Tejas", "Tejas", "PNBE", "NDLS", 1001),
+            ("12021", "Steel Shatabdi Express", "Shatabdi", "HWH", "TATA", 250),
+            ("12860", "Gitanjali Express", "Superfast", "HWH", "TATA", 250),
+            ("22861", "Howrah Ranchi Intercity Express", "Intercity", "HWH", "TATA", 250),
+            ("12871", "Ispat Express", "Express", "HWH", "TATA", 250),
+            ("18005", "Howrah Tatanagar Express", "Express", "HWH", "TATA", 250),
+            ("12022", "Steel Shatabdi Express", "Shatabdi", "TATA", "HWH", 250),
+            ("12859", "Gitanjali Express", "Superfast", "TATA", "HWH", 250),
+            ("22862", "Ranchi Howrah Intercity Express", "Intercity", "TATA", "HWH", 250),
+            ("12872", "Ispat Express", "Express", "TATA", "HWH", 250),
+            ("18006", "Tatanagar Howrah Express", "Express", "TATA", "HWH", 250),
         ]
         city_pairs = [
             ("NDLS", "MMCT"), ("NDLS", "HWH"), ("NDLS", "MAS"), ("NDLS", "SBC"), ("NDLS", "HYB"),
@@ -108,6 +122,7 @@ class Command(BaseCommand):
             ("JP", "NDLS"), ("JP", "LKO"), ("JP", "BPL"), ("JP", "INDB"), ("JP", "ADI"),
             ("PNBE", "NDLS"), ("PNBE", "HWH"), ("PNBE", "BSB"), ("PNBE", "RNC"), ("PNBE", "GHY"),
             ("HWH", "GHY"), ("HWH", "RNC"), ("HWH", "VSKP"), ("HWH", "MAS"), ("HWH", "SDAH"),
+            ("HWH", "TATA"), ("TATA", "HWH"), ("TATA", "RNC"), ("TATA", "VSKP"), ("TATA", "MMCT"),
             ("PUNE", "NGP"), ("PUNE", "BPL"), ("PUNE", "HYB"), ("PUNE", "MMCT"), ("PUNE", "BRC"),
         ]
         train_types = ["Superfast", "Express", "Intercity", "Mail", "Rajdhani", "Shatabdi", "Duronto", "Tejas"]
@@ -146,6 +161,7 @@ class Command(BaseCommand):
             )
             midpoint_codes = ["BPL", "JP", "LKO", "PUNE", "HYB", "NGP", "BRC", "BSB", "RNC", "VSKP"]
             route_codes = list(dict.fromkeys([src, midpoint_codes[idx % len(midpoint_codes)], dst]))
+            Route.objects.filter(train=train).delete()
             for sequence, code in enumerate(route_codes, start=1):
                 Route.objects.update_or_create(
                     train=train,

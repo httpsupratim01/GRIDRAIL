@@ -5,6 +5,7 @@ from django.db import IntegrityError, transaction
 from rest_framework import serializers
 
 from payments.models import Payment
+from stations.models import Station
 from trains.models import Fare, Seat
 from .models import Booking, Passenger, SeatReservation
 
@@ -50,8 +51,10 @@ class BookingSerializer(serializers.ModelSerializer):
 class BookingCreateSerializer(serializers.Serializer):
     train = serializers.IntegerField()
     journey_date = serializers.DateField()
-    source = serializers.IntegerField()
-    destination = serializers.IntegerField()
+    source = serializers.IntegerField(required=False)
+    destination = serializers.IntegerField(required=False)
+    source_code = serializers.CharField(required=False)
+    destination_code = serializers.CharField(required=False)
     class_type = serializers.CharField()
     payment_method = serializers.ChoiceField(choices=Payment.Method.choices)
     passengers = PassengerSerializer(many=True)
@@ -60,6 +63,20 @@ class BookingCreateSerializer(serializers.Serializer):
     def validate(self, attrs):
         if len(attrs["passengers"]) != len(attrs["seat_ids"]):
             raise serializers.ValidationError("Passenger count must match selected seats.")
+        if attrs.get("source_code"):
+            source = Station.objects.filter(code__iexact=attrs["source_code"]).first()
+            if not source:
+                raise serializers.ValidationError("Source station code is invalid.")
+            attrs["source"] = source.id
+        if attrs.get("destination_code"):
+            destination = Station.objects.filter(code__iexact=attrs["destination_code"]).first()
+            if not destination:
+                raise serializers.ValidationError("Destination station code is invalid.")
+            attrs["destination"] = destination.id
+        if not attrs.get("source") or not attrs.get("destination"):
+            raise serializers.ValidationError("Source and destination are required.")
+        class_aliases = {"1AC": "1A", "2AC": "2A", "3AC": "3A", "SL": "Sleeper", "CC": "Chair Car"}
+        attrs["class_type"] = class_aliases.get(attrs["class_type"].strip().upper(), attrs["class_type"])
         fare = Fare.objects.filter(train_id=attrs["train"], class_type=attrs["class_type"]).first()
         if not fare:
             raise serializers.ValidationError("Fare is not configured for the selected train and class.")

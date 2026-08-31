@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.models.railway import Booking, Fare, Route, Station, Train
 from app.schemas.railway import FareQuote, PnrLookup, SeatState, TrainSearchResult
-from app.services.search import search_trains, seat_map
+from app.services.search import normalize_class_type, search_trains, seat_map
 
 router = APIRouter(prefix="/api", tags=["railway"])
 
@@ -17,7 +17,7 @@ def train_search(
     destination: str = Query(..., description="Destination station code, e.g. MMCT"),
     journey_date: date = Query(...),
     class_type: str | None = None,
-    passengers: int = Query(1, ge=1, le=6),
+    passengers: int = Query(1, ge=1, le=20),
     sort_by: str = "departure_time",
     db: Session = Depends(get_db),
 ):
@@ -31,6 +31,7 @@ def train_search(
 def availability(train_id: int, journey_date: date, class_type: str, db: Session = Depends(get_db)):
     if not db.get(Train, train_id):
         raise HTTPException(status_code=404, detail="Train not found")
+    class_type = normalize_class_type(class_type) or class_type
     return seat_map(db, train_id, journey_date, class_type)
 
 
@@ -51,7 +52,8 @@ def schedule(train_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/fares/calculate", response_model=FareQuote)
-def calculate_fare(train_id: int, class_type: str, passengers: int = Query(1, ge=1, le=6), db: Session = Depends(get_db)):
+def calculate_fare(train_id: int, class_type: str, passengers: int = Query(1, ge=1, le=20), db: Session = Depends(get_db)):
+    class_type = normalize_class_type(class_type) or class_type
     fare = db.query(Fare).filter(Fare.train_id == train_id, Fare.class_type == class_type).first()
     if not fare:
         raise HTTPException(status_code=404, detail="Fare not configured")

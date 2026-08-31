@@ -3,7 +3,7 @@ import AppLayout from "./layouts/AppLayout";
 import { ChangePasswordPage, ForgotPasswordPage, LoginPage, RegisterPage, SimplePage } from "./pages/AuthPages";
 import { AdminDashboard, ManagementPage, NotificationsPage, PassengerDashboard, PnrStatusPage, ProfilePage, ReportsPage, SavedJourneysPage, SupportPage, WalletPage } from "./pages/DashboardPages";
 import Home from "./pages/Home";
-import { BookingReviewPage, CancellationPage, ConfirmationPage, MyBookingsPage, PassengerDetailsPage, PaymentPage, RefundStatusPage, SeatAvailabilityPage, TicketDetailsPage, TrainDetailsPage, TrainResultsPage, TrainSearchPage } from "./pages/TrainPages";
+import { BookingReviewPage, CancellationPage, CancelledTicketsPage, ConfirmationPage, MyBookingsPage, PassengerDetailsPage, PaymentPage, RefundStatusPage, SeatAvailabilityPage, TicketDetailsPage, TrainDetailsPage, TrainResultsPage, TrainSearchPage } from "./pages/TrainPages";
 
 export default function App() {
   return (
@@ -34,6 +34,7 @@ export default function App() {
         <Route path="/support" element={<SupportPage />} />
         <Route path="/tickets/:id" element={<TicketDetailsPage />} />
         <Route path="/cancel/:id" element={<CancellationPage />} />
+        <Route path="/cancellations" element={<CancelledTicketsPage />} />
         <Route path="/refunds" element={<RefundStatusPage />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/admin" element={<AdminDashboard />} />

@@ -619,6 +619,18 @@ pre {
   font-weight: 700;
 }
 
+.secondary-action {
+  align-items: center;
+  background: #f9fbfa;
+  border: 1px solid #c7d3cf;
+  border-radius: 8px;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+}
+
 .danger {
   background: #b42318;
   border-color: #b42318;
@@ -788,6 +800,14 @@ pre {
   gap: 14px;
 }
 
+.password-panel label {
+  color: #52635e;
+  display: grid;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 6px;
+}
+
 .profile-hero {
   align-items: center;
   background: #ffffff;
@@ -954,6 +974,273 @@ pre {
   color: #17120a;
 }
 
+.booking-step {
+  display: grid;
+  gap: 18px;
+}
+
+.passenger-card {
+  background: #f9fbfa;
+  border: 1px solid #dce5e1;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.passenger-card h2 {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.passenger-card label {
+  color: #52635e;
+  display: grid;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.review-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.review-grid article {
+  background: #f9fbfa;
+  border: 1px solid #dce5e1;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.review-grid span {
+  color: #64726e;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.review-grid strong {
+  font-size: 18px;
+}
+
+.payment-methods {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.payment-methods button {
+  flex-direction: column;
+  min-height: 88px;
+}
+
+.payment-methods button.selected {
+  background: #132522;
+  border-color: #132522;
+  color: #ffffff;
+}
+
+.payment-box {
+  background: #f9fbfa;
+  border: 1px solid #dce5e1;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.payment-box label {
+  color: #52635e;
+  display: grid;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.payment-box p {
+  color: #64726e;
+  margin: 0;
+}
+
+.confirmation-card {
+  display: grid;
+  justify-items: start;
+}
+
+.confirmation-card svg {
+  color: #0f766e;
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.booking-ledger {
+  display: grid;
+  gap: 18px;
+}
+
+.eyebrow {
+  color: #0f766e;
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.ticket-summary {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ticket-summary article {
+  align-items: center;
+  background: #f9fbfa;
+  border: 1px solid #dce5e1;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px 12px;
+  grid-template-columns: auto 1fr;
+  padding: 16px;
+}
+
+.ticket-summary svg {
+  color: #f45c2f;
+  grid-row: span 2;
+}
+
+.ticket-summary span {
+  color: #64726e;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.ticket-summary strong {
+  font-size: 24px;
+}
+
+.ticket-list {
+  display: grid;
+  gap: 14px;
+}
+
+.ticket-card {
+  align-items: center;
+  background: linear-gradient(90deg, #ffffff 0%, #ffffff 68%, #f9fbfa 68%, #f9fbfa 100%);
+  border: 1px solid #dce5e1;
+  border-left: 5px solid #0f766e;
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 1fr) auto;
+  padding: 18px;
+}
+
+.ticket-card.cancelled {
+  border-left-color: #b42318;
+  opacity: 0.92;
+}
+
+.ticket-card-main {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  min-width: 0;
+}
+
+.ticket-card-main > div:last-child {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ticket-card-main strong {
+  overflow-wrap: anywhere;
+}
+
+.ticket-card-main span,
+.ticket-meta span {
+  align-items: center;
+  color: #64726e;
+  display: flex;
+  gap: 6px;
+}
+
+.ticket-icon {
+  align-items: center;
+  background: #e6f4f1;
+  border-radius: 8px;
+  color: #0f766e;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+.ticket-meta {
+  display: grid;
+  gap: 8px;
+}
+
+.ticket-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.ticket-actions a {
+  border: 1px solid #c7d3cf;
+  border-radius: 8px;
+  font-weight: 800;
+  padding: 10px 14px;
+}
+
+.ticket-actions .danger-link {
+  border-color: #fecaca;
+  color: #b42318;
+}
+
+.status-pill {
+  background: #e6f4f1;
+  border-radius: 999px;
+  color: #0f766e;
+  font-weight: 900;
+  padding: 8px 11px;
+}
+
+.danger-pill {
+  background: #fee2e2;
+  color: #b42318;
+}
+
+.cancel-panel {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+
+.cancel-panel h2,
+.cancel-panel p {
+  margin: 0;
+}
+
+.cancel-panel label {
+  color: #52635e;
+  display: grid;
+  font-size: 13px;
+  gap: 6px;
+}
+
 .form-grid {
   grid-template-columns: repeat(3, 1fr);
   margin-bottom: 18px;
@@ -987,6 +1274,8 @@ pre {
   .hero-stats,
   .chart-grid,
   .info-band,
+  .payment-methods,
+  .review-grid,
   .form-grid,
   .profile-editor {
     grid-template-columns: 1fr;
@@ -1001,9 +1290,19 @@ pre {
   }
 
   .train-row,
+  .ticket-card,
   .topbar {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .ticket-card,
+  .ticket-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-actions {
+    justify-content: flex-start;
   }
 }
 

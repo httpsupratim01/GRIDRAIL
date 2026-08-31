@@ -52,6 +52,7 @@ export function ProfilePage({ admin = false }: { admin?: boolean }) {
     frequent_journeys: user?.frequent_journeys?.join(", ") || "",
   });
   const [saved, setSaved] = useState(false);
+  const [savingPhoto, setSavingPhoto] = useState(false);
 
   useEffect(() => {
     djangoApi.get("/auth/profile").then(({ data }) => {
@@ -66,14 +67,18 @@ export function ProfilePage({ admin = false }: { admin?: boolean }) {
     });
   }, []);
 
-  async function save() {
+  async function persistProfile(nextForm = form) {
     await djangoApi.put("/auth/profile", {
-      ...form,
-      frequent_journeys: form.frequent_journeys.split(",").map((item) => item.trim()).filter(Boolean),
+      ...nextForm,
+      frequent_journeys: nextForm.frequent_journeys.split(",").map((item) => item.trim()).filter(Boolean),
     });
     await refreshUser();
     setSaved(true);
     window.setTimeout(() => setSaved(false), 1800);
+  }
+
+  async function save() {
+    await persistProfile();
   }
 
   function usePhoto(event: ChangeEvent<HTMLInputElement>) {
@@ -81,10 +86,30 @@ export function ProfilePage({ admin = false }: { admin?: boolean }) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
-      setForm((current) => ({ ...current, avatar_url: String(reader.result || "") }));
+    reader.onload = async () => {
+      const avatar_url = String(reader.result || "");
+      const nextForm = { ...form, avatar_url };
+      setForm(nextForm);
+      setSavingPhoto(true);
+      try {
+        await persistProfile(nextForm);
+      } finally {
+        setSavingPhoto(false);
+      }
     };
     reader.readAsDataURL(file);
+    event.target.value = "";
+  }
+
+  async function removePhoto() {
+    const nextForm = { ...form, avatar_url: "" };
+    setForm(nextForm);
+    setSavingPhoto(true);
+    try {
+      await persistProfile(nextForm);
+    } finally {
+      setSavingPhoto(false);
+    }
   }
 
   return (
@@ -102,7 +127,8 @@ export function ProfilePage({ admin = false }: { admin?: boolean }) {
         <input ref={cameraInputRef} type="file" accept="image/*" capture="user" onChange={usePhoto} />
         <button type="button" onClick={() => galleryInputRef.current?.click()}>Choose Photo</button>
         <button type="button" onClick={() => cameraInputRef.current?.click()}>Take Photo</button>
-        {form.avatar_url && <button type="button" onClick={() => setForm({ ...form, avatar_url: "" })}>Remove Photo</button>}
+        {form.avatar_url && <button type="button" onClick={removePhoto}>Remove Photo</button>}
+        {savingPhoto && <span>Saving photo...</span>}
       </div>
       <div className="profile-editor">
         <label>Username<input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} /></label>
@@ -130,9 +156,9 @@ export function SavedJourneysPage() {
 }
 
 export function WalletPage() {
-  const [bookings, setBookings] = useState<any[]>([]);
-  useEffect(() => { djangoApi.get("/bookings/").then(({ data }) => setBookings(data.results || data)); }, []);
-  return <PassengerModule title="Payments" rows={bookings.map((b) => [b.pnr, currency(b.total_fare), b.payment_status || "Pending"])} empty="No payments yet." />;
+  const [payments, setPayments] = useState<any[]>([]);
+  useEffect(() => { djangoApi.get("/payments/").then(({ data }) => setPayments(data.results || data)); }, []);
+  return <PassengerModule title="Payments" rows={payments.map((p) => [p.transaction_id, `${p.pnr} · ${p.payment_method} · ${currency(p.amount)}`, p.payment_status])} empty="No payments yet." />;
 }
 
 export function NotificationsPage() {

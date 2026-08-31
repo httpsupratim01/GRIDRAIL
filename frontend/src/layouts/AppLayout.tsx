@@ -1,4 +1,4 @@
-import { Bell, CalendarDays, CircleHelp, CreditCard, Heart, LayoutDashboard, LogOut, LucideIcon, Menu, Search, ShieldCheck, Ticket, Train, UserRound } from "lucide-react";
+import { Ban, Bell, CalendarDays, CircleHelp, CreditCard, Heart, LayoutDashboard, LogOut, LucideIcon, Menu, Search, ShieldCheck, Ticket, Train, UserRound } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,6 +9,7 @@ export default function AppLayout() {
     ["/profile", "My Profile", UserRound],
     ["/trains/search", "Search Trains", Search],
     ["/bookings", "My Bookings", Ticket],
+    ["/cancellations", "Cancelled Tickets", Ban],
     ["/pnr-status", "PNR Status", ShieldCheck],
     ["/saved-journeys", "Saved Journeys", Heart],
     ["/wallet", "Payments", CreditCard],
@@ -31,7 +32,8 @@ export default function AppLayout() {
     ["/admin/cancellations", "Cancellations", ShieldCheck],
     ["/admin/refunds", "Refunds", CreditCard],
     ["/admin/reports", "Reports", LayoutDashboard],
-    ["/admin/profile", "Admin Profile", UserRound]
+    ["/admin/profile", "Admin Profile", UserRound],
+    ["/change-password", "Change Password", ShieldCheck]
   ];
   const links = user?.role === "ADMIN" ? adminLinks : passengerLinks;
 

@@ -86,6 +86,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
@@ -105,3 +106,7 @@ SIMPLE_JWT = {
     "SIGNING_KEY": os.getenv("JWT_SECRET", SECRET_KEY),
     "ALGORITHM": os.getenv("JWT_ALGORITHM", "HS256"),
 }
+
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
+RAZORPAY_CURRENCY = os.getenv("RAZORPAY_CURRENCY", "INR")

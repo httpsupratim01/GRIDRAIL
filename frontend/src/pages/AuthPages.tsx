@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { djangoApi } from "../services/api";
 
 export function LoginPage({ admin = false }: { admin?: boolean }) {
   const { login } = useAuth();
@@ -66,7 +67,43 @@ export function ForgotPasswordPage() {
 }
 
 export function ChangePasswordPage() {
-  return <SimplePage title="Change Password" body="Password changes are handled by the authenticated Django account workflow and can be connected to the profile endpoint." />;
+  const { user } = useAuth();
+  const [form, setForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+    setSaving(true);
+    try {
+      await djangoApi.post("/auth/change-password", form);
+      setForm({ current_password: "", new_password: "", confirm_password: "" });
+      setSuccess("Password changed successfully. Use the new password next time you login.");
+    } catch (err: any) {
+      const data = err.response?.data;
+      setError(data?.current_password?.[0] || data?.new_password?.[0] || data?.confirm_password?.[0] || data?.non_field_errors?.[0] || "Password could not be changed.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <section className="auth-panel password-panel">
+      <span className="eyebrow">{user?.role === "ADMIN" ? "Admin Security" : "Passenger Security"}</span>
+      <h1>Change Password</h1>
+      <form onSubmit={submit}>
+        <label>Current Password<input type="password" value={form.current_password} onChange={(e) => setForm({ ...form, current_password: e.target.value })} /></label>
+        <label>New Password<input type="password" value={form.new_password} onChange={(e) => setForm({ ...form, new_password: e.target.value })} /></label>
+        <label>Confirm New Password<input type="password" value={form.confirm_password} onChange={(e) => setForm({ ...form, confirm_password: e.target.value })} /></label>
+        {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
+        <button className="primary-action" disabled={saving}>{saving ? "Changing..." : "Change Password"}</button>
+      </form>
+    </section>
+  );
 }
 
 export function SimplePage({ title, body }: { title: string; body: string }) {
